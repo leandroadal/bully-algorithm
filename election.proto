@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+service Election {
+  rpc resp_serv_id(Empty) returns (response_id) {}
+  rpc resp_permission(request_permission) returns (response_permission) {}
+  rpc resp_election(request_election) returns (response_election) {}
+  rpc recv_coordinator(send_coordinator) returns (Empty) {}
+}
+
+message Empty {}
+
+message response_id {
+  int32 id = 1;
+}
+
+message response_permission {
+  bool permission = 1;
+}
+
+message request_permission {
+  string type = 1;
+}
+
+message send_coordinator {
+  int32 leader_id = 1;
+}
+
+message request_election {
+  int32 serv_id = 1;
+}
+
+message response_election {
+  string message = 1;
+}
