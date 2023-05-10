@@ -51,44 +51,59 @@ def run_server(id, port, peers):
             choice = input('[1] - Criar canal com os outros nó\n'
                            '[2] - Encontrar os ids do servidores\n'
                            '[3] - Solicitar permissão ao coordenador\n'
-                           '[4] - ID do Líder atual\n'
-                           '[5] - Solicitar eleições\n'
-                           '[6] - Tornar este nó coordenador\n'
+                           '[4] - ID do coordenador atual (debug)\n'
+                           '[5] - Solicitar eleições (debug)\n'
+                           '[6] - Tornar este nó coordenador (debug)\n'
                            'Digite o número correspondente a requisição: ')
             print(' ')
-
+            #   TODO VERIFICAR OS MENUS
             if choice == '1':
-                election.stubs = []
-                for peer in peers:
-                    if peer != port:
-                        channel = grpc.insecure_channel(f'localhost:{str(peer)}')
-                        stub = election_pb2_grpc.ElectionStub(channel)
-                        election.stubs.append(stub)
-                print('Sucesso!\n')
+                stubs(election, port, peers)
             elif choice == '2':
                 print('=== Solicitando ids ===')
-                election.req_serv_id()
+                res = election.req_serv_id()
+                if res and election.leader_id is None:
+                    print('Elegendo um novo coordenador...')
+                    election.req_election()  # Realiza a eleição do coordenador
+                    print(f'O coordenador é o Nó: '
+                          f'{"Atual" if election.leader_id == election.id else election.leader_id}')
+                elif res:
+                    print(f'O coordenador é o Nó: '
+                          f'{"Atual" if election.leader_id == election.id else election.leader_id}')
+                elif res is False:
+                    print('Falha ao obter algum id')
                 print('\n')
             elif choice == '3':
-                if election.req_permission('CREATE') is False:
+                if election.id != election.leader_id and election.req_permission('CREATE') is None:
                     print('Coordenador não está respondendo!')
                     print('Elegendo um novo coordenador...')
-                    print(f'O novo coordenador será: {election.req_election()}')
-                print(election.req_permission('CREATE'))
+                    print(f'O novo coordenador será: {election.leader_id}')
+                elif election.id != election.leader_id:
+                    print(election.req_permission('CREATE'))
+                else:
+                    print('Não foi possível efetuar a requisição. O nó atual é o coordenador')
             elif choice == '4':
-                print(f'O líder atual é: {election.leader_id}')
+                print(f'O coordenador atual é: nó {election.leader_id}')
             elif choice == '5':
                 res = election.req_election()
                 if res == 'OK':
                     print(f'Desistindo da eleição pois nó com id mais alto respondeu')
-                else:
-                    print(f'O novo líder é: {res}')
+                    print(f'O coordenador eleito é: nó {election.leader_id}')
             elif choice == '6':
                 print(election.send_coordinator())
     except KeyboardInterrupt:
         print('\n')
         print('Encerando o Servidor!')
 
+
+def stubs(election, port, peers):
+    election.stubs = []
+    for peer in peers:
+        if peer != port:
+            channel = grpc.insecure_channel(f'localhost:{str(peer)}')
+            stub = election_pb2_grpc.ElectionStub(channel)
+            election.stubs.append(stub)
+    print('Sucesso!\n')
 
 
 if __name__ == '__main__':

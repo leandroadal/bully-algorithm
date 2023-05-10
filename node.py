@@ -12,37 +12,17 @@ class Election(election_pb2_grpc.ElectionServicer):
         self.nodes_id = {}
 
     def req_serv_id(self):
-        for stub in self.stubs:
-            try:
+        try:
+            for stub in self.stubs:
                 response = stub.resp_serv_id(election_pb2.Empty())
-                print(response.id)
                 self.nodes_id[response.id] = stub
-            except grpc.RpcError:
-                continue
+                print(response.id)
+            return True
+        except grpc.RpcError:
+            return False
 
     def resp_serv_id(self, request, context):
         return election_pb2.response_id(id=self.id)
-
-    def req_permission(self, type):
-        if self.leader_id is None:
-            self.req_election()
-            return None
-        else:
-            try:
-                # Pede permissão ao coordenador
-                stub = self.nodes_id[self.leader_id]
-                response = stub.resp_permission((election_pb2.request_permission(type=type)), timeout=5.0)
-                return response.permission
-            except grpc.RpcError:
-                return False
-
-    def resp_permission(self, request, context):
-        """Quando eleito, o nó coordenador gerenciara os processos"""
-        ran = random.randint(1, 1000)
-        if ran >= 500:
-            return election_pb2.response_permission(permission=True)
-        else:
-            return election_pb2.response_permission(permission=False)
 
     def req_election(self):
         for ids, stub in self.nodes_id.items():
@@ -57,6 +37,7 @@ class Election(election_pb2_grpc.ElectionServicer):
 
     def resp_election(self, request, context):
         if request.serv_id < self.id:
+            self.req_election()  # Se for maior é necessário fazer um pedido de eleição aos peers com id superior
             return election_pb2.response_election(message='OK')
         return election_pb2.response_election(message='IGNORE')
 
@@ -66,9 +47,31 @@ class Election(election_pb2_grpc.ElectionServicer):
                 stub.recv_coordinator(election_pb2.send_coordinator(leader_id=self.id))
                 self.leader_id = self.id
             except grpc.RpcError:
-                continue
+                continue  # para caso algum servidor
         return f'O novo coordenador é: {self.leader_id}'
 
     def recv_coordinator(self, request, context):
         self.leader_id = request.leader_id
         return election_pb2.Empty()
+
+    def req_permission(self, type):
+        if self.leader_id is None:
+            return self.req_election()
+        else:
+            try:
+                # Pede permissão ao coordenador
+                stub = self.nodes_id[self.leader_id]
+                response = stub.resp_permission((election_pb2.request_permission(type=type)), timeout=5.0)
+                return response.permission
+            except grpc.RpcError:
+                # Se o Coordenador não responder dentro do tempo limite iniciam-se novas eleições
+                self.req_election()
+                return None
+
+    def resp_permission(self, request, context):
+        """Quando eleito, o nó coordenador gerenciara os processos"""
+        ran = random.randint(1, 1000)
+        if ran >= 500:
+            return election_pb2.response_permission(permission=True)
+        else:
+            return election_pb2.response_permission(permission=False)
