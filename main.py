@@ -5,6 +5,39 @@ import election_pb2_grpc
 import node
 
 
+def conf_server():
+    while True:
+        try:
+            standard = input('Deseja usar uma configuração pre-definida '
+                             'para a porta do servidor e seus pares? S / N: ')
+            if standard == 'S' or 's':
+                id = int(input('Digite o ID (de 1 a 3) do servidor: '))
+                if id == 1:
+                    run_server(1, 50051, [50052, 50053])
+                elif id == 2:
+                    run_server(2, 50052, [50051, 50053])
+                elif id == 3:
+                    run_server(3, 50053, [50052, 50051])
+                return False
+            elif standard == 'N' or 'n':
+                id = int(input('Digite o ID do servidor: '))
+                port = int(input('Digite a porta do servidor: '))
+                qt = int(input('Digite a quantidade de peers: '))
+
+                peers = []
+                for i in range(qt):
+                    p = int(input(f'{i + 1} peer: '))
+                    peers.append(p)
+                run_server(id, port, peers)
+                return False
+            else:
+                print('Erro! Digite S para usar uma configuração padrão e N pada definir uma própria')
+        except KeyboardInterrupt:
+            print('\n')
+            print('Encerando o Servidor!')
+            break
+
+
 def run_server(id, port, peers):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     election = node.Election(id)
@@ -57,17 +90,6 @@ def run_server(id, port, peers):
         print('Encerando o Servidor!')
 
 
+
 if __name__ == '__main__':
-    id = int(input('Digite o ID do servidor: '))
-    port = int(input('Digite a porta do servidor: '))
-
-    qt = int(input('Digite a quantidade de peers: '))
-    peers = []
-    for i in range(qt):
-        p = int(input(f'{i + 1} peer: '))
-        peers.append(p)
-    run_server(id, port, peers)
-
-    # id=1, port=50051, peers=[50052, 50053]
-    # id=2, port=50052, peers=[50051, 50053]
-    # id=3, port=50053, peers=[50052, 50051]
+    conf_server()
