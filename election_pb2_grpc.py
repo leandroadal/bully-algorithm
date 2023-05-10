@@ -29,9 +29,9 @@ class ElectionStub(object):
                 request_serializer=election__pb2.request_election.SerializeToString,
                 response_deserializer=election__pb2.response_election.FromString,
                 )
-        self.recv_coordinator = channel.unary_unary(
-                '/Election/recv_coordinator',
-                request_serializer=election__pb2.send_coordinator.SerializeToString,
+        self.resp_leader = channel.unary_unary(
+                '/Election/resp_leader',
+                request_serializer=election__pb2.request_leader.SerializeToString,
                 response_deserializer=election__pb2.Empty.FromString,
                 )
 
@@ -57,7 +57,7 @@ class ElectionServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def recv_coordinator(self, request, context):
+    def resp_leader(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -81,9 +81,9 @@ def add_ElectionServicer_to_server(servicer, server):
                     request_deserializer=election__pb2.request_election.FromString,
                     response_serializer=election__pb2.response_election.SerializeToString,
             ),
-            'recv_coordinator': grpc.unary_unary_rpc_method_handler(
-                    servicer.recv_coordinator,
-                    request_deserializer=election__pb2.send_coordinator.FromString,
+            'resp_leader': grpc.unary_unary_rpc_method_handler(
+                    servicer.resp_leader,
+                    request_deserializer=election__pb2.request_leader.FromString,
                     response_serializer=election__pb2.Empty.SerializeToString,
             ),
     }
@@ -148,7 +148,7 @@ class Election(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def recv_coordinator(request,
+    def resp_leader(request,
             target,
             options=(),
             channel_credentials=None,
@@ -158,8 +158,8 @@ class Election(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Election/recv_coordinator',
-            election__pb2.send_coordinator.SerializeToString,
+        return grpc.experimental.unary_unary(request, target, '/Election/resp_leader',
+            election__pb2.request_leader.SerializeToString,
             election__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

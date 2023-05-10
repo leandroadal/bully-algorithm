@@ -16,6 +16,10 @@ Para o roda o projeto é simples:
 
 - 1 - Executar o arquivo Main em ao menos dois terminais
 
-- 2 - Digitar as informações do servidor como `id`, `porta` e `peer` (ou seja, os servidores que devem se conectar).
+- 2 - Escolher usar a configuração padrão** ou personalizada para os servidores
+
+- 3 - Digitar as informações do servidor como `id`, `porta` e `peer` (ou seja, os servidores que devem se conectar).
   
 - 3 - Realizar as requisições desejadas
+
+** - Três servidores que se conectam nas portas `50051, 50052, 50053`

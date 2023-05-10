@@ -56,7 +56,6 @@ def run_server(id, port, peers):
                            '[6] - Tornar este nó coordenador (debug)\n'
                            'Digite o número correspondente a requisição: ')
             print(' ')
-            #   TODO VERIFICAR OS MENUS
             if choice == '1':
                 stubs(election, port, peers)
             elif choice == '2':
@@ -90,7 +89,7 @@ def run_server(id, port, peers):
                     print(f'Desistindo da eleição pois nó com id mais alto respondeu')
                     print(f'O coordenador eleito é: nó {election.leader_id}')
             elif choice == '6':
-                print(election.send_coordinator())
+                print(election.req_leader())
     except KeyboardInterrupt:
         print('\n')
         print('Encerando o Servidor!')

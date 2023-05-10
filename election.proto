@@ -4,7 +4,7 @@ service Election {
   rpc resp_serv_id(Empty) returns (response_id) {}
   rpc resp_permission(request_permission) returns (response_permission) {}
   rpc resp_election(request_election) returns (response_election) {}
-  rpc recv_coordinator(send_coordinator) returns (Empty) {}
+  rpc resp_leader(request_leader) returns (Empty) {}
 }
 
 message Empty {}
@@ -21,7 +21,7 @@ message request_permission {
   string type = 1;
 }
 
-message send_coordinator {
+message request_leader {
   int32 leader_id = 1;
 }
 

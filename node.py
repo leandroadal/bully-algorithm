@@ -33,7 +33,7 @@ class Election(election_pb2_grpc.ElectionServicer):
                         return response.message
                 except grpc.RpcError:
                     continue
-        return self.send_coordinator()  # Nenhum servidor respondeu com OK
+        return self.req_leader()  # Nenhum servidor respondeu com OK
 
     def resp_election(self, request, context):
         if request.serv_id < self.id:
@@ -41,16 +41,16 @@ class Election(election_pb2_grpc.ElectionServicer):
             return election_pb2.response_election(message='OK')
         return election_pb2.response_election(message='IGNORE')
 
-    def send_coordinator(self):
+    def req_leader(self):
         for stub in self.stubs:
             try:
-                stub.recv_coordinator(election_pb2.send_coordinator(leader_id=self.id))
+                stub.resp_leader(election_pb2.request_leader(leader_id=self.id), )
                 self.leader_id = self.id
             except grpc.RpcError:
                 continue  # para caso algum servidor
         return f'O novo coordenador é: {self.leader_id}'
 
-    def recv_coordinator(self, request, context):
+    def resp_leader(self, request, context):
         self.leader_id = request.leader_id
         return election_pb2.Empty()
 
