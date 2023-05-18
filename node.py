@@ -44,7 +44,7 @@ class Election(election_pb2_grpc.ElectionServicer):
     def req_leader(self):
         for stub in self.stubs:
             try:
-                stub.resp_leader(election_pb2.request_leader(leader_id=self.id), )
+                stub.resp_leader(election_pb2.request_leader(leader_id=self.id))
                 self.leader_id = self.id
             except grpc.RpcError:
                 continue  # para caso algum servidor

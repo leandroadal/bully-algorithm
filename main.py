@@ -62,10 +62,13 @@ def menu_server(election, port, peers):
             print('=== Solicitando ids ===')
             res = election.req_serv_id()
             if res and election.leader_id is None:
-                print('Elegendo um novo coordenador...')
-                election.req_election()  # Realiza a eleição do coordenador
-                print(f'O coordenador é o Nó: '
-                      f'{"Atual" if election.leader_id == election.id else election.leader_id}')
+                print('Solicitando ser eleito...')
+                res_election = election.req_election()  # Realiza a eleição do coordenador
+                if res_election != 'OK':  # caso receba um OK ao alguém com id maior disponível
+                    print(f'O coordenador é o Nó: '
+                          f'{"Atual" if election.leader_id == election.id else election.leader_id}')
+                else:
+                    print('Desistindo da eleição')
             elif res:
                 print(f'O coordenador é o Nó: '
                       f'{"Atual" if election.leader_id == election.id else election.leader_id}')
@@ -109,4 +112,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\n')
         print('Encerando o Servidor!')
-
