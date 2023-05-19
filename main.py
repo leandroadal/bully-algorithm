@@ -9,12 +9,12 @@ def conf_server():
     while True:
         standard = input('Deseja usar uma configuração pre-definida '
                          'para a porta do servidor e seus pares? S / N: ')
-        if standard == 'S' or 's':
+        if standard == 'S' or standard == 's':
             id = int(input('Digite o ID (de 1 a 3) do servidor: '))
             servers = {
                 1: {'port': 50051, 'peers': [50052, 50053]},
                 2: {'port': 50052, 'peers': [50051, 50053]},
-                3: {'port': 50053, 'peers': [50052, 50051]},
+                3: {'port': 50053, 'peers': [50052, 50051]}
             }
             if 0 < id < 4:
                 port = servers[id]['port']
@@ -22,7 +22,7 @@ def conf_server():
                 return id, port, peers
             else:
                 print('Erro! Digite um ID entre 1 e 3')
-        elif standard == 'N' or 'n':
+        elif standard == 'N' or standard == 'n':
             id = int(input('Digite o ID do servidor: '))
             port = int(input('Digite a porta do servidor: '))
             qt = int(input('Digite a quantidade de peers: '))
