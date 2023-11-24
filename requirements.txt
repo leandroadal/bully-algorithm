@@ -1,0 +1,6 @@
+# requirements.txt
+
+grpcio==1.59.3
+grpcio-tools==1.59.3
+protobuf==4.25.1
+setuptools==69.0.2

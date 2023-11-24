@@ -9,6 +9,9 @@
   
 - Cada servidor deve se associar a portas diferentes para se comunicar entre si na rede.
   
+## Dependências
+
+`pip install grpcio grpcio-tools`
 
 ## Rodando o projeto
 
