@@ -1,6 +1,7 @@
 # Bully Algorithm
 
-# Description:
+## Description
+
 - Projeto da disciplina de Sistemas Distribuídos que tem por objetivo mostra o funcionamento do algoritmo do Valentão usando o `gRPC` como forma de comunicação.
 
 - Em `main` o servidor é "ligado" e mostra os menus
@@ -19,10 +20,10 @@ Para o roda o projeto é simples:
 
 - 1 - Executar o arquivo Main em ao menos dois terminais
 
-- 2 - Escolher usar a configuração padrão** ou personalizada para os servidores
+- 2 - Escolher usar a configuração padrão¹ ou personalizada para os servidores
 
 - 3 - Digitar as informações do servidor como `id`, `porta` e `peer` (ou seja, os servidores que devem se conectar).
   
 - 3 - Realizar as requisições desejadas
 
-** - Três servidores que se conectam nas portas `50051, 50052, 50053`
+¹ Três servidores que se conectam nas portas `50051, 50052, 50053`
